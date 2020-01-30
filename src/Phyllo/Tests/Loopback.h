@@ -87,7 +87,7 @@ void loopReplyDocument(Stack &stack) { // useful to test receiving correctness o
   stack.update();
   auto stackReceived = stack.receive();
   if (!stackReceived) return;
-  
+
   Document document;
   document.header.schema = 0xa0;
   Document::Writer &writer = document.writer;
@@ -114,7 +114,7 @@ void loopReplyMessage(Stack &stack) { // useful to test receiving correctness of
   stack.update();
   auto stackReceived = stack.receive();
   if (!stackReceived) return;
-  
+
   stack.top.send(ByteBufferView(kTestTopic), makeDocument());
 }
 
@@ -203,7 +203,7 @@ void loopEchoFlat(Stack &stack) { // useful to test receiving correctness of Doc
   stack.update();
   auto stackReceived = stack.receive();
   if (!stackReceived) return;
-  
+
   stack.top.send(copyFlatDocument(*stackReceived));
 }
 template<typename Stack>

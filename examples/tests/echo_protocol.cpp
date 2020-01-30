@@ -1,13 +1,13 @@
+// Test whether the protocol stack correctly echoes received data
+
 // Standard libraries
 #include <Arduino.h>
 
-// Phyllo platform configuration
-#include "Phyllo/Platform.h"
 
 // Third-party libraries
 
 // Phyllo
-#include "Phyllo/Stacks.h"
+#include "Phyllo.h"
 #include "Phyllo/Tests/Loopback.h"
 
 // Choose conventional stack configurations
@@ -52,28 +52,16 @@ TransportStack transportStack(mediumStack, logicalStack);
 ApplicationStack applicationStack(transportStack.sender);
 ProtocolStack protocolStack(transportStack, applicationStack);
 
-// Alias configuration:
-
-//auto &outerStack = transportStack;
-auto &outerStack = protocolStack;
-
-auto &commLink = outerStack.top;
-
 // Arduino
 
 void setup()
 {
   Phyllo::IO::startSerial(SerialStream, kUSBSerialRate);
   pinMode(LED_BUILTIN, OUTPUT);
-  outerStack.setup();
+  protocolStack.setup();
 }
 
 void loop() {
-  // Transport stack tests
-  //Phyllo::Tests::loopAnnounce(transportStack);
-  //Phyllo::Tests::loopReply(transportStack);
-  //Phyllo::Tests::loopEchoPayload(transportStack);
-
   // Application stack tests
   //Phyllo::Tests::loopAnnounce(protocolStack.top);
   //Phyllo::Tests::loopReplyDocument(protocolStack);

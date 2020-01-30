@@ -1,14 +1,13 @@
-// Standard libraries
-#include <math.h>
-#include <Arduino.h>
+// Test whether a blink sketch correctly compiles and uploads when
+// the Phyllo header files needed for the echo test are included.
 
-// Phyllo platform configuration
-#include "Phyllo/Platform.h"
+// Standard libraries
+#include <Arduino.h>
 
 // Third-party libraries
 
 // Phyllo
-#include "Phyllo/Stacks.h"
+#include "Phyllo.h"
 #include "Phyllo/Tests/Loopback.h"
 
 // Arduino
