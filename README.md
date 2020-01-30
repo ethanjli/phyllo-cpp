@@ -1,6 +1,6 @@
 # phyllo-cpp
 
-Phyllo is a point-to-point communication protocol suite and application framework specification designed for use with embedded systems.
+[Phyllo](https://github.com/ethanjli/phyllo) is a point-to-point communication protocol suite and application framework specification designed for use with embedded systems.
 
 Phyllo provides a specification for high-throughput + reliable + asynchronous message exchange between exactly two (2) peers. Phyllo also provides a specification for applications to communicate with each other across a pair of hosts (which may be either an embedded device or a regular computer) or distributed across multiple hosts.
 
@@ -44,16 +44,17 @@ Currently, phyllo-cpp does not yet:
 
 The following platforms are actively tested with the library.
 
+Arduino-compatible ARM-based microcontroller boards support full capabilities of the library:
+
+- Arduino Due
+- Teensy 4.0
+- Teensy 3.6
+- Teensy LC
+
 Arduino-compatible AVR-based microcontroller boards:
 
 - Arduino Uno: to leave sufficient RAM for application software, CRC calculation in ValidatedDatagramLink must use a byte remainder lookup table stored in PROGMEM instead of regular RAM. For the same reason, stream chunks are limited to 180 bytes long, though this can be decreased depending on application needs to free up more RAM.
 - Arduino Micro: same constraints as with the Uno.
-
-Arduino-compatible ARM-based microcontroller boards support full capabilities of the library:
-
-- Arduino Due
-- Teensy LC
-- Teensy 4.0
 
 
 ## Performance
