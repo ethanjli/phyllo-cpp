@@ -12,6 +12,7 @@
 #include "Phyllo/Protocol/Presentation/MessagePack.h"
 #include "PubSub/MessageLink.h"
 #include "PubSub/DocumentLink.h"
+#include "PubSub/Router.h"
 
 // Stacks orchestrate the flow of data through protocol layers
 
@@ -24,6 +25,10 @@ namespace Presentation { namespace MsgPack {
 
 namespace Application { namespace PubSub {
   using MsgPackDocumentLink = DocumentLink<Presentation::MsgPack::kFormat>;
+  using MsgPackTopicEndpoint = TopicEndpoint<Presentation::MsgPack::kFormat>;
+  using MsgPackEndpointHandler = EndpointHandler<Presentation::MsgPack::kFormat>;
+  using MsgPackEndpointHandlerReference = EndpointHandlerReference<Presentation::MsgPack::kFormat>;
+  using MsgPackSingleEndpointHandler = SingleEndpointHandler<Presentation::MsgPack::kFormat>;
 } }
 
 } }
@@ -120,11 +125,11 @@ class PubSubStack {
 
       return document.receive(messageReceived->topic(), messageReceived->payload());
     }
-    
+
     bool send(const Send &document) {
       return top.send(document);
     }
-  
+
   protected:
     using IntermediateToSendDelegate = PubSub::MsgPackDocumentLink::ToSendDelegate;
     IntermediateToSendDelegate intermediateToSender;
