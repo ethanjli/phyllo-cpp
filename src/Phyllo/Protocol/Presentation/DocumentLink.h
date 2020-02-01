@@ -47,12 +47,13 @@ class DocumentLink {
       return received;
     }
 
+    // TODO: add send method which automatically specifies schema for primitive and sequence types, too!
     template<typename Class>
     typename etl::enable_if<!etl::is_one_of<Class, Send, ByteBuffer, ByteBufferView>::value, bool>::type
     send(Class &instance) {
       Document<Format> document;
       document.header.schema = Class::kSchema;
-      if (!document.write(instance)) return false; // TODO: errors in payload writing must propagate up to the document! MessageReader needs to return whether it succeeded at the end of parsing, and readClass needs to check for errors from the class method for reading
+      if (!document.writer.writeClassAs(instance)) return false; // TODO: errors in payload writing must propagate up to the document! MessageReader needs to return whether it succeeded at the end of parsing, and readClass needs to check for errors from the class method for reading
       return send(document);
     }
     template<typename Class>

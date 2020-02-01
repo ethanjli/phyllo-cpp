@@ -71,7 +71,7 @@ class Document {
 
     DocumentHeader header;
     mutable Reader reader; // Warning: mutating the reader is not considered to break Document constness!
-    mutable Writer writer; // Warning: mutating the writer is not considered to break Document constness!
+    Writer writer;
 
     Document() :
       reader(dumpBuffer, kHeaderSize, kFooterSize),
@@ -100,21 +100,7 @@ class Document {
 
       return dump(body);
     }
-    template<typename Class>
-    bool readPayload(Class &instance) const { // deserialize the payload buffer into an object
-      reader.start();
-      bool status = reader.readClass(instance);
-      return reader.finish() && status;
-    }
 
-    template<typename Class>
-    typename etl::enable_if<!etl::is_one_of<Class, ByteBuffer, ByteBufferView>::value, bool>::type
-    write(const Class &instance) {
-      writer.start(); // This comes before writeHeader because it also resizes dumpBuffer so that header can write into it!
-      bool status = header.write(dumpBuffer);
-      status = status && writer.writeClass(instance);
-      return writer.finish() && status;
-    }
     bool write(const ByteBufferView &body) {
       // Write a body, update the header for consistency, and dump to own buffer
       if (body.empty()) return false;

@@ -3,6 +3,7 @@
 // Standard libraries
 
 // Third-party libraries
+#include <etl/delegate.h>
 
 // Phyllo
 #include "Phyllo/Types.h"
@@ -228,7 +229,7 @@ class Command {
       document[3] = args;
       updateMembers();
     }
-  
+
   protected:
     Document document;
 

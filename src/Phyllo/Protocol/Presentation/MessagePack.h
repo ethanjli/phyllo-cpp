@@ -53,7 +53,7 @@ class DocumentReader<MsgPack::kFormat> {
 
     void start() {
       mpack_reader_init_data(
-        &reader, 
+        &reader,
         reinterpret_cast<const char *>(buffer.data() + startOffset), bufferSize()
       );
     }
@@ -83,6 +83,19 @@ class DocumentReader<MsgPack::kFormat> {
     }
 
     // Type-specified reads
+
+    template<typename Type>
+    bool readAs(Type &value) {
+      start();
+      value = read<Type>(); // TODO: only update value if the document matches Type!
+      return finish();
+    }
+    template<typename Class>
+    bool readClassAs(Class &instance) {
+      start();
+      bool status = readClass(instance);
+      return finish() && status;
+    }
 
     template<typename Type>
     typename etl::enable_if<etl::is_same<Type, None>::value, Type>::type
@@ -593,6 +606,19 @@ class DocumentWriter<MsgPack::kFormat> {
     }
 
     // Type-deduced writes
+
+    template<typename... ArgTypes>
+    bool writeAs(const ArgTypes&... args) { // serialize the provided args
+      start(); // This comes before writeHeader because it also resizes dumpBuffer so that header can write into it!
+      write(args...);
+      return finish();
+    }
+    template<typename Class>
+    bool writeClassAs(const Class &instance) {
+      start(); // This comes before writeHeader because it also resizes dumpBuffer so that header can write into it!
+      bool status = writeClass(instance);
+      return finish() && status;
+    }
 
     void write() { writeNone(); }
     void write(None null) { writeNone(); }

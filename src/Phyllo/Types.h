@@ -52,8 +52,8 @@ using Binary64 = FixedByteBuffer<64>;
   const int, const int8_t, const int16_t, const int32_t, const int64_t, \
   float, double, \
   const float, const double, \
-  StringView, String8, String16, String32, String64, \
-  const StringView, const String8, const String16, const String32, const String64, \
+  StringView, char *, String8, String16, String32, String64, \
+  const StringView, const char *, const String8, const String16, const String32, const String64, \
   BinaryView, Binary8, Binary16, Binary32, Binary64, \
   const BinaryView, const Binary8, const Binary16, const Binary32, const Binary64
 
