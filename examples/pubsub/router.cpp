@@ -57,8 +57,8 @@ namespace Framework = Phyllo::Protocol::Application::PubSub;
 
 // Echo and copy handling can be done by using topic endpoints in loop(), without writing an endpoint handler class
 // They are implemented here without using an endpoint handler class, just to show how it's don
-Framework::MsgPackTopicEndpoint echoTopicEndpoint("echo", applicationStack.sender);
-Framework::MsgPackTopicEndpoint copyTopicEndpoint("copy", applicationStack.sender);
+Framework::MsgPackEndpoint echoEndpoint("echo", applicationStack.sender);
+Framework::MsgPackEndpoint copyEndpoint("copy", applicationStack.sender);
 
 // Reply handling relies on enapsulated data, so it's handled by a single endpoint handler object
 // It is implmented as a basic example of how to write a basic single endpoint handler object
@@ -211,8 +211,8 @@ BlinkHandler blinkHandler(applicationStack.sender);
 class PingPongHandler : public Framework::MsgPackEndpointHandler {
   public:
     PingPongHandler(const ToSendDelegate &delegate) :
-      pingTopicEndpoint("ping", delegate),
-      pongTopicEndpoint("pong", delegate) {}
+      pingEndpoint("ping", delegate),
+      pongEndpoint("pong", delegate) {}
 
     // Event loop interface
 
@@ -223,20 +223,20 @@ class PingPongHandler : public Framework::MsgPackEndpointHandler {
     // Endpoint handler interface
 
     void receive(const ToReceive &document) {
-      auto pingReceived = pingTopicEndpoint.receive(document);
+      auto pingReceived = pingEndpoint.receive(document);
       if (!pingReceived) return;
 
       EndpointDocument pongDocument;
       pongDocument.header.schema = Phyllo::Protocol::Presentation::Schema::Generic::Primitive::Uint64;
       pongDocument.writer.writeAs(counter);
-      pongTopicEndpoint.send(pongDocument);
+      pongEndpoint.send(pongDocument);
       ++counter;
     }
 
   protected:
     uint64_t counter;
-    Framework::MsgPackTopicEndpoint pingTopicEndpoint;
-    Framework::MsgPackTopicEndpoint pongTopicEndpoint;
+    Framework::MsgPackEndpoint pingEndpoint;
+    Framework::MsgPackEndpoint pongEndpoint;
 };
 
 PingPongHandler pingPongHandler(applicationStack.sender);
@@ -274,11 +274,11 @@ void loop() {
   if (!stackReceived) return;
 
   // Application: handle received data
-  auto echoReceived = echoTopicEndpoint.receive(*stackReceived);
-  if (echoReceived) echoTopicEndpoint.send(*echoReceived);
+  auto echoReceived = echoEndpoint.receive(*stackReceived);
+  if (echoReceived) echoEndpoint.send(*echoReceived);
 
-  auto copyReceived = copyTopicEndpoint.receive(*stackReceived);
-  if (copyReceived) copyTopicEndpoint.send(Phyllo::Tests::copyFlatDocument(*copyReceived));
+  auto copyReceived = copyEndpoint.receive(*stackReceived);
+  if (copyReceived) copyEndpoint.send(Phyllo::Tests::copyFlatDocument(*copyReceived));
 
   for (auto &handler : pubSubHandlers) handler->receive(*stackReceived);
 }
