@@ -56,10 +56,12 @@ ProtocolStack protocolStack(transportStack, applicationStack);
 namespace Framework = Phyllo::Protocol::Application::PubSub;
 
 // Echo and copy handling can be done by using topic endpoints in loop(), without writing an endpoint handler class
+// They are implemented here without using an endpoint handler class, just to show how it's don
 Framework::MsgPackTopicEndpoint echoTopicEndpoint("echo", applicationStack.sender);
 Framework::MsgPackTopicEndpoint copyTopicEndpoint("copy", applicationStack.sender);
 
 // Reply handling relies on enapsulated data, so it's handled by a single endpoint handler object
+// It is implmented as a basic example of how to write a basic single endpoint handler object
 class ReplyHandler : public Framework::MsgPackSingleEndpointHandler {
   public:
     ReplyHandler(const ToSendDelegate &delegate) :
@@ -84,8 +86,83 @@ class ReplyHandler : public Framework::MsgPackSingleEndpointHandler {
 
 ReplyHandler replyHandler(applicationStack.sender);
 
-// Blink handling relies on internal state, so it's handled by a single endpoint handler object
+// String prefix handling works on a single endpoint, so it's handled by a single endpoint handler object
+// It is implemented as an example of how to write a handler which receives and sends basic structs
+class StringPrefixHandler : public Framework::MsgPackSingleEndpointHandler {
+  public:
+    StringPrefixHandler(const ToSendDelegate &delegate) :
+      Framework::MsgPackSingleEndpointHandler("prefix", delegate) {}
 
+    // Pub-Sub Node interface
+
+    void endpointReceived(const EndpointDocument &document) {
+      Request request;
+      if (!document.reader.readClassAs(request)) return;
+
+      EndpointDocument responseDocument;
+      Response response(request);
+      response.responseString.append(request.prefixString.data(), request.prefixString.size());
+      response.responseString.append(request.rootString.data(), request.rootString.size());
+      if (!responseDocument.writer.writeClassAs(response)) return;
+      send(responseDocument);
+    }
+
+  protected:
+    struct Request {
+      static const Phyllo::Protocol::Presentation::SerializationFormatCode kFormat = 0x80;
+      using MessageReader = ToReceive::Reader;
+      using MessageWriter = ToReceive::Writer;
+
+      Phyllo::StringView rootString;
+      Phyllo::StringView prefixString;
+
+      // Serializable Document interface
+
+      bool read(MessageReader &reader) { // used by DocumentReader to deserialize from a MessagePack Document body
+        reader.startArrayLength(2);
+        rootString = reader.readStringView();
+        prefixString = reader.readStringView();
+        reader.finishArray();
+
+        return !reader.error();
+      }
+
+      bool write(MessageWriter &writer) const { // used by DocumentWriter to serialize into a MessagePack Document body
+        writer.startArray(2);
+        writer.writeString(rootString);
+        writer.writeString(prefixString);
+        writer.finishArray();
+        return !writer.error();
+      }
+    };
+
+    struct Response {
+      static const Phyllo::Protocol::Presentation::SerializationFormatCode kFormat = 0x81;
+      using MessageWriter = ToReceive::Writer;
+
+      Response(const Request &request) :
+        request(request) {}
+
+      const Request &request;
+      Phyllo::String64 responseString;
+
+      // Serializable Document interface
+
+      bool write(MessageWriter &writer) const { // used by DocumentWriter to serialize into a MessagePack Document body
+        writer.startArray(2);
+        writer.writeClass(request);
+        writer.writeString(responseString);
+        writer.finishArray();
+        return !writer.error();
+      }
+    };
+};
+
+StringPrefixHandler stringPrefixHandler(applicationStack.sender);
+
+// Blink handling relies on internal state, so it's handled by a single endpoint handler object
+// It is implemented as an example of how to write a stateful endpoint handler object which
+// also has its own event-loop behavior
 class BlinkHandler : public Framework::MsgPackSingleEndpointHandler {
   public:
     BlinkHandler(const ToSendDelegate &delegate) :
@@ -130,7 +207,7 @@ class BlinkHandler : public Framework::MsgPackSingleEndpointHandler {
 BlinkHandler blinkHandler(applicationStack.sender);
 
 // Ping-pong handling relies on internal state and works on two endpoints, so it's handled by a general endpoint handler object
-
+// It is implemented as an example of how to write a general endpoint handler object with multiple endpoints
 class PingPongHandler : public Framework::MsgPackEndpointHandler {
   public:
     PingPongHandler(const ToSendDelegate &delegate) :
@@ -167,6 +244,7 @@ PingPongHandler pingPongHandler(applicationStack.sender);
 
 Framework::MsgPackEndpointHandler *pubSubHandlers[] = {
   &replyHandler,
+  &stringPrefixHandler,
   &blinkHandler,
   &pingPongHandler
 };

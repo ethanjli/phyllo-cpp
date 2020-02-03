@@ -20,45 +20,6 @@
 
 namespace Phyllo { namespace Protocol { namespace Application { namespace PubSub {
 
-/*template<Presentation::SerializationFormatCode PayloadFormat>
-class Message {
-  public:
-    static const Presentation::SerializationFormatCode kFormat =
-      Presentation::SerializationFormat::Binary::Dynamic::MsgPack;
-    using MessageDocument = Presentation::Document<kFormat>;
-    using MessageReader = Presentation::DocumentReader<kFormat>;
-    using MessageWriter = Presentation::DocumentWriter<kFormat>;
-    using PayloadDocument = Presentation::Document<PayloadFormat>;
-
-    Binary16 topic;
-    PayloadDocument payload;
-
-    bool writeTopic(const ByteBufferView &topic) { // set the topic
-      if (topic.size() > this->topic.max_size()) return false;
-      this->topic.resize(topic.size());
-      memcpy(this->topic.data(), topic.data(), topic.size());
-      return true;
-    }
-
-    // Serializable Document interface
-
-    bool read(MessageReader &reader) { // used by DocumentReader to deserialize from a MessagePack Document body
-      reader.startArrayLength(2);
-      reader.readBinary(topic);
-      bool status = payload.read(reader.readBinaryView());
-      reader.finishArray();
-    
-      return !reader.error() && status;
-    }
-    bool write(MessageWriter &writer) const { // used by DocumentWriter to serialize into a MessagePack Document body
-      writer.startArray(2);
-      writer.writeBinary(topic);
-      writer.writeBinary(payload.buffer());
-      writer.finishArray();
-      return !writer.error();
-    }
-};*/
-
 class MessageHeader {
   public:
     using Length = uint8_t;
@@ -117,7 +78,7 @@ class Message {
       // Parse a given buffer, update the own header and body, and dump to own buffer
       if (buffer.empty()) return false;
       if (buffer.size() < kOverheadSize) return false; // TODO: handle this as an error signal
-      
+
       if (!header.read(buffer)) return false;
       // Dump body and header into own buffer
       ByteBufferView body(buffer.begin() + kHeaderSize, buffer.end() - kFooterSize);

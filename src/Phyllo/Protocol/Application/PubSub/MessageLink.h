@@ -18,69 +18,6 @@
 
 namespace Phyllo { namespace Protocol { namespace Application { namespace PubSub {
 
-/*template<Presentation::SerializationFormatCode PayloadFormat>
-class MessageLink {
-  public:
-    static const Presentation::SerializationFormatCode kSchema = Message<PayloadFormat>::kSchema;
-    using MessageDocument = typename Message<PayloadFormat>::MessageDocument;
-    using PayloadDocument = typename Message<PayloadFormat>::PayloadDocument;
-
-    using ToReceive = ByteBufferView; // The type of data passed up from below
-    using Receive = Message<PayloadFormat>; // The type of data passed up to above
-    using OptionalReceive = Util::Optional<Receive>;
-    using Send = PayloadDocument;
-    using SendDelegate = etl::delegate<bool(const ByteBufferView &, const Send &)>;
-    using ToSend = MessageDocument; // The type of data passed down to below
-    using ToSendDelegate = etl::delegate<bool(const ToSend &)>;
-
-    MessageLink(const ToSendDelegate &delegate) : sender(delegate) {}
-    MessageLink(const MessageLink &router) = delete; // prevent accidental copy-by-value
-
-    // Event loop interface
-
-    void setup() {}
-    void update() {}
-
-    // Named-topic Document Link interface
-
-    OptionalReceive receive(const MessageDocument &messageDocument) {
-      if (
-        messageDocument.header.schema != kSchema
-        && messageDocument.header.schema != Presentation::Schema::Generic::Schemaless
-      ) return OptionalReceive();
-
-      OptionalReceive received;
-      received.enabled = messageDocument.readPayload(received.value);
-      return received;
-    }
-
-    template<typename Class>
-    typename etl::enable_if<!etl::is_one_of<Class, Send, ByteBuffer, ByteBufferView>::value, bool>::type
-    send(const ByteBufferView &topic, const Class &payload) {
-      Message<PayloadFormat> message;
-      if (!message.writeTopic(topic)) return false;
-      if (!message.payload.write(payload)) return false;
-      return send(message);
-    }
-
-    bool send(const ByteBufferView &topic, const Send &payloadDocument) {
-      Message<PayloadFormat> message;
-      if (!message.writeTopic(topic)) return false;
-      message.payload = payloadDocument;
-      return send(message);
-    }
-
-    bool send(const Message<PayloadFormat> &message) {
-      MessageDocument document;
-      document.header.schema = kSchema;
-      bool status = document.write(message);
-      return sender(document) && status;
-    }
-
-  protected:
-    const ToSendDelegate &sender;
-};*/
-
 class MessageLink {
   public:
     using ToReceive = ByteBufferView; // The type of data passed up from below
