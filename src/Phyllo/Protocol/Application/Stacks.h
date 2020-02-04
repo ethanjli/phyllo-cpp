@@ -13,6 +13,7 @@
 #include "PubSub/MessageLink.h"
 #include "PubSub/DocumentLink.h"
 #include "PubSub/Endpoint.h"
+#include "PubSub/Router.h"
 
 // Stacks orchestrate the flow of data through protocol layers
 
@@ -28,6 +29,8 @@ namespace Application { namespace PubSub {
   using MsgPackEndpoint = Endpoint<Presentation::MsgPack::kFormat>;
   using MsgPackEndpointHandler = EndpointHandler<Presentation::MsgPack::kFormat>;
   using MsgPackSingleEndpointHandler = SingleEndpointHandler<Presentation::MsgPack::kFormat>;
+  template<size_t MaxHandlers = 256>
+  using MsgPackRouter = Router<Presentation::MsgPack::kFormat, MaxHandlers>;
 } }
 
 } }
@@ -140,5 +143,9 @@ class PubSubStack {
       return message.send(topic, body, type);
     }
 };
+
+namespace PubSub {
+  using ApplicationStack = PubSubStack;
+}
 
 } } }

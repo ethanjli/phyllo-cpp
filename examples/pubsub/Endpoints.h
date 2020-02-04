@@ -15,6 +15,8 @@ namespace Framework = Phyllo::Protocol::Application::PubSub;
 // It is implmented as a basic example of how to write a basic single endpoint handler object
 class EchoHandler : public Framework::MsgPackSingleEndpointHandler {
   public:
+    EchoHandler() :
+      Framework::MsgPackSingleEndpointHandler("echo") {}
     EchoHandler(const ToSendDelegate &delegate) :
       Framework::MsgPackSingleEndpointHandler("echo", delegate) {}
 
@@ -29,6 +31,8 @@ class EchoHandler : public Framework::MsgPackSingleEndpointHandler {
 // It is implmented as a basic example of how to write a basic single endpoint handler object
 class CopyHandler : public Framework::MsgPackSingleEndpointHandler {
   public:
+    CopyHandler() :
+      Framework::MsgPackSingleEndpointHandler("copy") {}
     CopyHandler(const ToSendDelegate &delegate) :
       Framework::MsgPackSingleEndpointHandler("copy", delegate) {}
 
@@ -43,6 +47,8 @@ class CopyHandler : public Framework::MsgPackSingleEndpointHandler {
 // It is implmented as a basic example of how to write a basic single endpoint handler object
 class ReplyHandler : public Framework::MsgPackSingleEndpointHandler {
   public:
+    ReplyHandler() :
+      Framework::MsgPackSingleEndpointHandler("reply") {}
     ReplyHandler(const ToSendDelegate &delegate) :
       Framework::MsgPackSingleEndpointHandler("reply", delegate) {}
 
@@ -67,6 +73,8 @@ class ReplyHandler : public Framework::MsgPackSingleEndpointHandler {
 // It is implemented as an example of how to write a handler which receives and sends basic structs
 class StringPrefixHandler : public Framework::MsgPackSingleEndpointHandler {
   public:
+    StringPrefixHandler() :
+      Framework::MsgPackSingleEndpointHandler("prefix") {}
     StringPrefixHandler(const ToSendDelegate &delegate) :
       Framework::MsgPackSingleEndpointHandler("prefix", delegate) {}
 
@@ -140,6 +148,10 @@ class StringPrefixHandler : public Framework::MsgPackSingleEndpointHandler {
 // also has its own event-loop behavior
 class BlinkHandler : public Framework::MsgPackSingleEndpointHandler {
   public:
+    BlinkHandler() :
+      Framework::MsgPackSingleEndpointHandler("blink"),
+      blinkTimer(100),
+      updateTimer(5000) {}
     BlinkHandler(const ToSendDelegate &delegate) :
       Framework::MsgPackSingleEndpointHandler("blink", delegate),
       blinkTimer(100),
@@ -183,6 +195,9 @@ class BlinkHandler : public Framework::MsgPackSingleEndpointHandler {
 // It is implemented as an example of how to write a general endpoint handler object with multiple endpoints
 class PingPongHandler : public Framework::MsgPackEndpointHandler {
   public:
+    PingPongHandler() :
+      pingEndpoint("ping"),
+      pongEndpoint("pong") {}
     PingPongHandler(const ToSendDelegate &delegate) :
       pingEndpoint("ping", delegate),
       pongEndpoint("pong", delegate) {}
@@ -204,6 +219,11 @@ class PingPongHandler : public Framework::MsgPackEndpointHandler {
       pongDocument.writer.writeAs(counter); // this sends a document which is just a counter of the number of pings received
       pongEndpoint.send(pongDocument);
       ++counter;
+    }
+
+    void setToSendDelegate(const ToSendDelegate &delegate) {
+      pingEndpoint.setToSendDelegate(delegate);
+      pongEndpoint.setToSendDelegate(delegate);
     }
 
   protected:

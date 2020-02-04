@@ -3,7 +3,6 @@
 // Standard libraries
 
 // Third-party libaries
-#include <etl/string_view.h>
 
 // Phyllo
 #include "Phyllo/Types.h"
@@ -21,6 +20,9 @@ class Endpoint : public Application::Endpoint<Document<Format>, Format> {
   public:
     using EndpointInterface = Application::Endpoint<Document<Format>, Format>;
 
+    template<typename Filter>
+    Endpoint(const Filter &filter) :
+      EndpointInterface(filter) {}
     template<typename Filter>
     Endpoint(const Filter &filter, const typename EndpointInterface::ToSendDelegate &delegate) :
       EndpointInterface(filter, delegate) {}

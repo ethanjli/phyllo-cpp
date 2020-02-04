@@ -3,7 +3,6 @@
 // Standard libraries
 
 // Third-party libaries
-#include <etl/string_view.h>
 #include <etl/functional.h>
 
 // Phyllo
@@ -20,9 +19,12 @@ namespace Phyllo { namespace Protocol { namespace Application {
 class NameFilter {
   public:
     const ByteBufferView filter;
+    uint8_t byteFilter;
 
+    NameFilter(uint8_t singleByteFilter) :
+      filter(ByteBufferView(&singleByteFilter, 1)), byteFilter(singleByteFilter) {}
     NameFilter(const char *filter) :
-      NameFilter(etl::string_view(filter)) {}
+      NameFilter(StringView(filter)) {}
     template<typename ByteArray>
     NameFilter(const ByteArray &filter) :
       filter(
@@ -69,8 +71,11 @@ class Endpoint {
     const NameFilter filter;
 
     template<typename Filter>
+    Endpoint(const Filter &filter) :
+      filter(filter) {}
+    template<typename Filter>
     Endpoint(const Filter &filter, const ToSendDelegate &delegate) :
-      filter(filter), sender(delegate) {}
+      filter(filter), sender(&delegate) {}
     Endpoint(const Endpoint &endpoint) = delete;
 
     // Endpoint interface
@@ -84,13 +89,19 @@ class Endpoint {
       return document;
     }
     bool send(const Send &sendDocument) {
+      if (sender == nullptr) return false;
+
       Document toSendDocument;
       prepareToSendDocument(toSendDocument, sendDocument);
-      return sender(toSendDocument);
+      return (*sender)(toSendDocument);
+    }
+
+    void setToSendDelegate(const ToSendDelegate &delegate) {
+      sender = &delegate;
     }
 
   protected:
-    const ToSendDelegate &sender;
+    const ToSendDelegate *sender;
 };
 
 // EndpointHandler is an interface class for a unit of the application which
@@ -109,6 +120,7 @@ class EndpointHandler {
 
     // Endpoint handler interface
     virtual void receive(const ToReceive &document) = 0;
+    virtual void setToSendDelegate(const ToSendDelegate &delegate) = 0;
 };
 
 // SingleEndpointHandler is an abstact base class for a unit of the application which
@@ -122,6 +134,9 @@ class SingleEndpointHandler : public EndpointHandler<Endpoint> {
     using EndpointDocument = typename EndpointHandler<Endpoint>::EndpointDocument;
 
     template<typename Filter>
+    SingleEndpointHandler(const Filter &filter) :
+      endpoint(filter) {}
+    template<typename Filter>
     SingleEndpointHandler(const Filter &filter, const ToSendDelegate &delegate) :
       endpoint(filter, delegate) {}
     SingleEndpointHandler(const SingleEndpointHandler &handler) = delete;
@@ -133,6 +148,9 @@ class SingleEndpointHandler : public EndpointHandler<Endpoint> {
       if (!topicReceived) return;
 
       endpointReceived(*topicReceived);
+    }
+    void setToSendDelegate(const ToSendDelegate &delegate) {
+      endpoint.setToSendDelegate(delegate);
     }
 
     // Single-endpoint handler interface
