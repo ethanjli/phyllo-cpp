@@ -30,12 +30,14 @@
 
 namespace Phyllo { namespace IO {
 
+static const long kUSBSerialRate = PHYLLO_USB_SERIAL_RATE; // This has no effect on Serial over native USB ports (as opposed to FTDI)
+
 template<typename SerialClass>
-void startSerial(SerialClass &serial, long serialDataRate = 115200) {
+void startSerial(SerialClass &serial, long serialDataRate = kUSBSerialRate, bool waitSerial = false) {
   serial.begin(serialDataRate);
-  #if ARDUINO >= 100 && !defined(CORE_TEENSY)
-  while (!serial) {;}
-  #endif
+  if (waitSerial) {
+    while (!serial) ;
+  }
 }
 
 // Programmer USB
@@ -47,6 +49,5 @@ auto &USBSerial = Serial;
 // Native USB (only on Due or Zero with native port)
 auto &USBSerial = SerialUSB;
 #endif
-static const long kUSBSerialRate = PHYLLO_USB_SERIAL_RATE; // This has no effect on Serial over native USB ports (as opposed to FTDI)
 
 } }

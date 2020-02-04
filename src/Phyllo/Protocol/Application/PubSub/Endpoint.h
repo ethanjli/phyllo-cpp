@@ -8,7 +8,7 @@
 // Phyllo
 #include "Phyllo/Types.h"
 #include "Phyllo/Protocol/Application/Endpoint.h"
-#include "Phyllo/Protocol/Application/PubSub/DocumentLink.h"
+#include "Phyllo/Protocol/Application/PubSub/Document.h"
 
 // Endpoints allow different objects to handle different documents depending on their respective named endpoints.
 

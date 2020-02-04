@@ -15,17 +15,6 @@
 
 // Serial Port configuration:
 auto &SerialStream = Phyllo::IO::USBSerial; // automatically chosen based on platform
-//auto &SerialStream = Serial; // Default USB on Arduino & Teensy boards
-//auto &SerialStream = SerialUSB; // Native USB on Due & Zero boards
-//auto &SerialStream = Serial1; // Hardware Serial
-//auto &SerialStream = Serial2; // Hardware Serial
-//auto &SerialStream = Serial3; // Hardware Serial
-//auto &SerialStream = Serial4; // Hardware Serial
-//auto &SerialStream = Serial5; // Hardware Serial
-//auto &SerialStream = Serial6; // Hardware Serial
-
-// Serial Port Data Rate configuration (ignored for Due on Native USB port, Micro, Leonardo, and Teensy):
-static const long kUSBSerialRate = Phyllo::IO::kUSBSerialRate; // automatically chosen by build flag, defaults to 115200
 
 // I/O + Transport Medium Sub-Stack configuration:
 using MediumStack = Phyllo::SerialMediumStack;
@@ -80,16 +69,18 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
 
   // Serial communication protocol stack: setup
-  Phyllo::IO::startSerial(SerialStream, kUSBSerialRate);
+  Phyllo::IO::startSerial(SerialStream);
   protocolStack.setup();
 
   // Application: setup
+  // This is equivalent to calling the setup() method of echoHandler, copyHandler, etc.
   for (auto &handler : pubSubHandlers) handler->setup();
 }
 
 void loop() {
   // Event loop updates
   protocolStack.update();
+  // This is equivalent to calling the update() method of echoHandler, copyHandler, etc.
   for (auto &handler : pubSubHandlers) handler->update();
 
   // Serial commmunication protocol stack: receive data
@@ -97,6 +88,6 @@ void loop() {
   if (!stackReceived) return;
 
   // Application: handle received data
-
+  // This is equivalent to calling the receive(*stackReceived) method of echoHandler, copyHandler, etc.
   for (auto &handler : pubSubHandlers) handler->receive(*stackReceived);
 }
