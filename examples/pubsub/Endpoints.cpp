@@ -3,7 +3,6 @@
 // Standard libraries
 #include <Arduino.h>
 
-
 // Third-party libraries
 
 // Phyllo
@@ -11,47 +10,39 @@
 #include "Phyllo/Tests/Loopback.h"
 #include "Endpoints.h"
 
+
+// COMMUNICATION STACK
 // Choose conventional stack configurations
 
 // Serial Port configuration:
 auto &SerialStream = Phyllo::IO::USBSerial; // automatically chosen based on platform
-
-// I/O + Transport Medium Sub-Stack configuration:
-using MediumStack = Phyllo::SerialMediumStack;
+// Refer to examples/tests/EchoProtocol.cpp for alternative serial objects to set SerialStream
 
 // Transport Logical Sub-Stack configuration:
 using LogicalStack = Phyllo::Protocol::Transport::MinimalLogicalStack;
 //using LogicalStack = Phyllo::Protocol::Transport::ReducedLogicalStack;
 //using LogicalStack = Phyllo::Protocol::Transport::StandardLogicalStack;
 
-// Application Stack configuration:
-using ApplicationStack = Phyllo::Protocol::Application::PubSubStack;
-
-// Stack types automatically deduced
-
-using TransportStack = Phyllo::Protocol::Transport::TransportStack<MediumStack, LogicalStack>;
-using ProtocolStack = Phyllo::Protocol::ProtocolStack<TransportStack, ApplicationStack>;
-
-// Stack classes automatically created
-
-// TODO: use the configurations to make a templated complete stack which owns and initializes all of the following:
-MediumStack mediumStack(SerialStream);
-LogicalStack logicalStack(mediumStack.sender);
-TransportStack transportStack(mediumStack, logicalStack);
-ApplicationStack applicationStack(transportStack.sender);
-ProtocolStack protocolStack(transportStack, applicationStack);
-
-// Application
-
+// Application Framework configuration:
 namespace Framework = Phyllo::Protocol::Application::PubSub;
 
-EchoHandler echoHandler(applicationStack.sender);
-CopyHandler copyHandler(applicationStack.sender);
-ReplyHandler replyHandler(applicationStack.sender);
-StringPrefixHandler stringPrefixHandler(applicationStack.sender);
-BlinkHandler blinkHandler(applicationStack.sender);
-PingPongHandler pingPongHandler(applicationStack.sender);
+// Communication stack automatically created:
+using CommunicationStack = Phyllo::SerialCommunicationStack<LogicalStack, Framework::ApplicationStack>;
+CommunicationStack communicationStack(SerialStream);
 
+
+// APPLICATION
+// Specify application components
+
+// Instantiate Pub-Sub handlers:
+EchoHandler echoHandler(communicationStack.sender);
+CopyHandler copyHandler(communicationStack.sender);
+ReplyHandler replyHandler(communicationStack.sender);
+StringPrefixHandler stringPrefixHandler(communicationStack.sender);
+BlinkHandler blinkHandler(communicationStack.sender);
+PingPongHandler pingPongHandler(communicationStack.sender);
+
+// Add handlers to the list of handlers to update:
 Framework::MsgPackEndpointHandler *pubSubHandlers[] = {
   &echoHandler,
   &copyHandler,
@@ -61,16 +52,17 @@ Framework::MsgPackEndpointHandler *pubSubHandlers[] = {
   &pingPongHandler
 };
 
-// Arduino
+
+// ARDUINO
 
 void setup()
 {
   // Debugging setup
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT); // Note: this is redundant with BlinkHandler::setup()
 
   // Serial communication protocol stack: setup
   Phyllo::IO::startSerial(SerialStream);
-  protocolStack.setup();
+  communicationStack.setup();
 
   // Application: setup
   // This is equivalent to calling the setup() method of echoHandler, copyHandler, etc.
@@ -79,12 +71,12 @@ void setup()
 
 void loop() {
   // Event loop updates
-  protocolStack.update();
+  communicationStack.update();
   // This is equivalent to calling the update() method of echoHandler, copyHandler, etc.
   for (auto &handler : pubSubHandlers) handler->update();
 
   // Serial commmunication protocol stack: receive data
-  auto stackReceived = protocolStack.receive();
+  auto stackReceived = communicationStack.receive();
   if (!stackReceived) return;
 
   // Application: handle received data

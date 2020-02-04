@@ -35,12 +35,12 @@ static const long kUSBSerialRate = PHYLLO_USB_SERIAL_RATE; // This has no effect
 template<typename SerialClass>
 void startSerial(SerialClass &serial, long serialDataRate = kUSBSerialRate, bool waitSerial = false) {
   serial.begin(serialDataRate);
-  if (waitSerial) {
-    while (!serial) ;
-  }
+  if (!waitSerial) return;
+
+  while (!serial) ;
 }
 
-// Programmer USB
+// Native USB
 
 #if PHYLLO_USB_SERIAL == PHYLLO_USB_SERIAL_DEFAULT
 // UART USB (e.g. Uno and Due with programming port)

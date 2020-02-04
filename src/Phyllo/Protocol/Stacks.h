@@ -49,7 +49,7 @@ class ProtocolStack {
     }
 
     // Application interface
-    
+
     OptionalReceive receive() {
       auto transportReceived = transport.receive();
       if (!transportReceived) return OptionalReceive();

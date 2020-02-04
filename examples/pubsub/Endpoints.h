@@ -1,9 +1,12 @@
+#pragma once
+
 // Sample pub-sub endpoints for testing
 
 // Third-party libraries
 
 // Phyllo
 #include "Phyllo.h"
+#include "Phyllo/Util/Timing.h"
 #include "Phyllo/Tests/Loopback.h"
 
 namespace Framework = Phyllo::Protocol::Application::PubSub;
@@ -18,7 +21,7 @@ class EchoHandler : public Framework::MsgPackSingleEndpointHandler {
     // Pub-Sub Node interface
 
     void endpointReceived(const EndpointDocument &document) {
-      send(document);
+      send(document); // this just sends the document directly
     }
 };
 
@@ -32,7 +35,7 @@ class CopyHandler : public Framework::MsgPackSingleEndpointHandler {
     // Pub-Sub Node interface
 
     void endpointReceived(const EndpointDocument &document) {
-      send(Phyllo::Tests::copyFlatDocument(document));
+      send(Phyllo::Tests::copyFlatDocument(document)); // this copies the document into a new document in memory and sends it
     }
 };
 
@@ -47,13 +50,13 @@ class ReplyHandler : public Framework::MsgPackSingleEndpointHandler {
 
     void setup() {
       replyDocument.header.schema = Phyllo::Protocol::Presentation::Schema::Generic::Sequence::String16; // TODO: this belongs in ReplyNode's setup
-      replyDocument.writer.writeAs("hello!");
+      replyDocument.writer.writeAs("hello!"); // the reply document is just the string "hello!"
     }
 
     // Pub-Sub Node interface
 
     void endpointReceived(const EndpointDocument &document) {
-      send(replyDocument);
+      send(replyDocument); // this just sends the reply document initialized in setup()
     }
 
   protected:
@@ -158,15 +161,15 @@ class BlinkHandler : public Framework::MsgPackSingleEndpointHandler {
     // Pub-Sub Node interface
 
     void endpointReceived(const EndpointDocument &document) {
-      if (updateTimer.running()) return;
+      if (updateTimer.running()) return; // the update timer prevents the blink state from being updated more than once every 5 sec
 
-      document.reader.readAs(blinkTimer.enabled);
-      blinkTimer.reset();
-      updateTimer.start();
+      document.reader.readAs(blinkTimer.enabled); // this assumes the document is just a bool for whether to blink
+      blinkTimer.reset(); // start the timer for blinking
+      updateTimer.start(); // start the update timer
 
       EndpointDocument blinkDocument;
       blinkDocument.header.schema = Phyllo::Protocol::Presentation::Schema::Generic::Primitive::Boolean;
-      blinkDocument.writer.writeAs(blinkTimer.enabled);
+      blinkDocument.writer.writeAs(blinkTimer.enabled); // this sends a document which is just a bool for whether the led is blinking
       send(blinkDocument);
     }
 
@@ -198,7 +201,7 @@ class PingPongHandler : public Framework::MsgPackEndpointHandler {
 
       EndpointDocument pongDocument;
       pongDocument.header.schema = Phyllo::Protocol::Presentation::Schema::Generic::Primitive::Uint64;
-      pongDocument.writer.writeAs(counter);
+      pongDocument.writer.writeAs(counter); // this sends a document which is just a counter of the number of pings received
       pongEndpoint.send(pongDocument);
       ++counter;
     }

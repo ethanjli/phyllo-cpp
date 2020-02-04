@@ -310,7 +310,7 @@ class TransportStack {
     }
 
     // ByteBufferLink interface
-    
+
     bool send(const ByteBufferView &payload, DataUnitTypeCode type = DataUnitType::Bytes::Buffer) {
       return top.send(payload, type);
     }

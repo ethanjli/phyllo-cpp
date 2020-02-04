@@ -1,3 +1,5 @@
+#pragma once
+
 // Standard libraries
 
 // Third-party libraries
@@ -15,7 +17,7 @@ class TimeoutTimer {
     bool enabled = false;
     unsigned long timeout = 0;
 
-    TimeoutTimer();
+    TimeoutTimer() {}
 
     TimeoutTimer(unsigned long timeout) :
       timeout(timeout) {}
