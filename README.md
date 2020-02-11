@@ -11,6 +11,8 @@ Phyllo-cpp is a reference implementation in C++11 as a library for use on Arduin
 
 Use of the phyllo stack is done by polling such that at most one newly-received data unit is made available (as an object member) after each poll, so that other code can perform arbitrary operations on received data units.
 
+The phyllo stack does not allocate or use any heap memory - all memory is either on the stack or (for certain buffers) is held in a compile-time object.
+
 
 ## Functionality and Limitations
 
@@ -24,13 +26,12 @@ Currently, phyllo-cpp does:
 - Implement ValidatedDatagramLink.
 - Partially implement ReliableBufferLink.
 - Implement DocumentLink.
-- Implement Pub-Sub Framework's MessageLink and DocumentLink.
+- Implement Pub-Sub Framework's MessageLink and DocumentLink and Router.
 - Provide a polling-based interface for serial I/O.
 
 Currently, phyllo-cpp does not yet:
 
 - Fully implement ReliableBufferLink.
-- Implement the Pub-Sub Framework's Router.
 - Have moderate test coverage.
 - Implement a way to report errors at the protocol level in DatagramLink or above.
 - Provide documentation of library APIs.
