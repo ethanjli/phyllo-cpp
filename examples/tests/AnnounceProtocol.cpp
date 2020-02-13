@@ -57,13 +57,5 @@ void loop() {
   // Event loop updates
   communicationStack.update();
 
-  // Minimal Stack tests
-  //Phyllo::Tests::loopReplyDocument(communicationStack);
-  //Phyllo::Tests::loopEchoDirect(communicationStack);
-  //Phyllo::Tests::loopEchoFlat(communicationStack);
-
-  // Pub-Sub Stack tests
-  //Phyllo::Tests::loopReplyMessage(communicationStack);
-  //Phyllo::Tests::loopEchoDirect(communicationStack);
-  Phyllo::Tests::loopEchoFlatMessage(communicationStack);
+  Phyllo::Tests::loopAnnounce(communicationStack.top);
 }
