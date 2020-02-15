@@ -12,7 +12,7 @@
 #define PHYLLO_CRC_TABLE_PROGMEM 1
 
 #ifndef PHYLLO_CRC
-#define PHYLLO_CRC PHYLLO_CRC_TABLE_RAM
+#define PHYLLO_CRC PHYLLO_CRC_TABLE_PROGMEM
 #endif
 
 namespace Phyllo { namespace Util {

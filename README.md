@@ -54,7 +54,7 @@ Arduino-compatible ARM-based microcontroller boards support full capabilities of
 
 Arduino-compatible AVR-based microcontroller boards:
 
-- Arduino Uno: to leave sufficient RAM for application software, CRC calculation in ValidatedDatagramLink must use a byte remainder lookup table stored in PROGMEM instead of regular RAM. For the same reason, stream chunks are limited to 180 bytes long, though this can be decreased depending on application needs to free up more RAM.
+- Arduino Uno: to leave sufficient RAM for application software, stream chunks are limited to 80 bytes long, though this can be decreased depending on application needs to free up more RAM.
 - Arduino Micro: same constraints as with the Uno.
 
 
