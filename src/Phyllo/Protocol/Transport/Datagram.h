@@ -4,6 +4,9 @@
 
 // Third-party libraries
 #include <etl/algorithm.h>
+#ifdef PHYLLO_PLATFORM_ATMELMEGAAVR // This is needed for proper ETL compilation on the Nano Every
+#define ETL_CPP11_SUPPORTED 0
+#endif
 #include <etl/optional.h>
 
 // Phyllo
@@ -127,7 +130,7 @@ class Datagram {
     bool dump(const ByteBufferView &payload) {
       dumpBuffer.resize(kOverheadSize + payload.size());
       memcpy(dumpBuffer.begin() + kHeaderSize, payload.data(), payload.size());
-      
+
       return header.write(dumpBuffer);
     }
 
@@ -226,7 +229,7 @@ class ValidatedDatagram {
       return header.crc == cachedCRC.value();
     }
 
-    // Methods for updating validated datagram or 
+    // Methods for updating validated datagram or
 
     bool read(const ByteBufferView &buffer) {
       // Parse a given buffer, update the own header and payload, and dump to own buffer. Does not enforce header consistency.
@@ -276,7 +279,7 @@ class ValidatedDatagram {
     bool dump(const ByteBufferView &payload) {
       dumpBuffer.resize(kOverheadSize + payload.size());
       memcpy(dumpBuffer.begin() + kHeaderSize, payload.begin(), payload.size());
-      
+
       cachedCRC = etl::nullopt;
       return header.write(dumpBuffer);
     }

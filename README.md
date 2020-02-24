@@ -4,7 +4,7 @@
 
 Phyllo provides a specification for high-throughput + reliable + asynchronous message exchange between exactly two (2) peers. Phyllo also provides a specification for applications to communicate with each other across a pair of hosts (which may be either an embedded device or a regular computer) or distributed across multiple hosts.
 
-Phyllo-cpp is a reference implementation in C++11 as a library for use on Arduino-compatible embedded systems such as the Arduino Due and Teensy. The library can be used on extremely constrained embedded systems (8-bit microcontrollers with as little as 2 kB of RAM) such as the Arduino Uno and Arduino Micro, though with tighter constraints on data payload size.
+Phyllo-cpp is a reference implementation in C++11 as a library for use on Arduino-compatible embedded systems such as the Arduino Due, Arduino Nano Every, and Teensy. The library can be used on extremely constrained embedded systems (8-bit microcontrollers with as little as 2 kB of RAM) such as the Arduino Uno and Arduino Micro, though with tighter constraints on data payload size.
 
 
 ## Design
@@ -54,6 +54,7 @@ Arduino-compatible ARM-based microcontroller boards support full capabilities of
 
 Arduino-compatible AVR-based microcontroller boards:
 
+- Nano Every
 - Arduino Uno: to leave sufficient RAM for application software, stream chunks are limited to 80 bytes long, though this can be decreased depending on application needs to free up more RAM.
 - Arduino Micro: same constraints as with the Uno.
 

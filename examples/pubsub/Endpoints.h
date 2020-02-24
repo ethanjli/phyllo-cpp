@@ -151,7 +151,7 @@ class BlinkHandler : public Framework::MsgPackSingleEndpointHandler {
     BlinkHandler() :
       Framework::MsgPackSingleEndpointHandler("blink"),
       blinkTimer(100),
-      updateTimer(5000) {}
+      updateTimer(0) {}
     BlinkHandler(const ToSendDelegate &delegate) :
       Framework::MsgPackSingleEndpointHandler("blink", delegate),
       blinkTimer(100),
@@ -166,7 +166,11 @@ class BlinkHandler : public Framework::MsgPackSingleEndpointHandler {
       if (!blinkTimer.timedOut()) return;
 
       ledState = !ledState;
+      #ifdef PHYLLO_PLATFORM_ATMELMEGAAVR
+      digitalWrite(LED_BUILTIN, static_cast<PinStatus>(ledState));
+      #else
       digitalWrite(LED_BUILTIN, ledState);
+      #endif
       blinkTimer.reset();
     }
 
