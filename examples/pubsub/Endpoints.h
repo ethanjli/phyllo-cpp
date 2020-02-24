@@ -166,11 +166,7 @@ class BlinkHandler : public Framework::MsgPackSingleEndpointHandler {
       if (!blinkTimer.timedOut()) return;
 
       ledState = !ledState;
-      #ifdef PHYLLO_PLATFORM_ATMELMEGAAVR
-      digitalWrite(LED_BUILTIN, static_cast<PinStatus>(ledState));
-      #else
-      digitalWrite(LED_BUILTIN, ledState);
-      #endif
+      digitalWrite(LED_BUILTIN, ledState ? HIGH : LOW); // ?: operator needed for compatibiity with Arduino megaAVR core API; see https://github.com/arduino/ArduinoCore-API/issues/25
       blinkTimer.reset();
     }
 
