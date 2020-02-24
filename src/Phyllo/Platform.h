@@ -63,17 +63,15 @@ namespace std {
 #define nanf __builtin_nanf
 #define nanl __builtin_nanl
 
-// This forward declaration is needed for ETL v16.4.1's utilities.h to find swap correctly, but will be fixed in a future ETL release.
-#ifdef PHYLLO_PLATFORM_ATMELMEGAAVR
+#elif PHYLLO_PLATFORM == PHYLLO_PLATFORM_ATMELSAM
+#define ETL_NO_STL
+#endif
+
+// This forward declaration is needed for ETL v16.4.1's utilities.h to find swap correctly, but should be fixed in v16.4.3.
 namespace etl {
   template <typename T>
   void swap(T& a, T& b);
 }
-#endif
-
-#elif PHYLLO_PLATFORM == PHYLLO_PLATFORM_ATMELSAM
-#define ETL_NO_STL
-#endif
 
 // Define macros for easier debugging
 #define PHYLLO_DEBUG_LED digitalWrite(LED_BUILTIN, HIGH);

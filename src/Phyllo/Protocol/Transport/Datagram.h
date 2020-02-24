@@ -4,8 +4,8 @@
 
 // Third-party libraries
 #include <etl/algorithm.h>
-#ifdef PHYLLO_PLATFORM_ATMELMEGAAVR // This is needed for proper ETL compilation on the Nano Every
-#define ETL_CPP11_SUPPORTED 0
+#if PHYLLO_PLATFORM == PHYLLO_PLATFORM_ATMELAVR
+#define ETL_CPP11_SUPPORTED 0 // Needed for proper ETL compilation above v16.3.1
 #endif
 #include <etl/optional.h>
 
