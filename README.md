@@ -21,12 +21,12 @@ Because phyllo-cpp's development is driven by the needs of other ongoing project
 Currently, phyllo-cpp does:
 
 - Implement ChunkedStreamLink.
-- Implement FrameLink
-- Implement DatagramLink
+- Implement FrameLink.
+- Implement DatagramLink.
 - Implement ValidatedDatagramLink.
 - Partially implement ReliableBufferLink.
 - Implement DocumentLink.
-- Implement Pub-Sub Framework's MessageLink and DocumentLink and Router.
+- Implement Pub-Sub Framework's MessageLink and DocumentLink and EndpointHandler and Router.
 - Provide a polling-based interface for serial I/O.
 
 Currently, phyllo-cpp does not yet:

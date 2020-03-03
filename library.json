@@ -1,6 +1,6 @@
 {
   "name": "Phyllo",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "keywords": "serial, communication, protocol, device, control, arduino, message, m2m",
   "description": "Phyllo is a point-to-point communication protocol suite and application framework for serial communication with Arduino-compatible devices.",
   "repository": {
